@@ -37,4 +37,4 @@ engine = create_engine(connection_string)
 TABLENAME = MYSQL_USER + 'patient_portal'
 
 
-patient_portal.to_sql(TABLENAME, con=engine)
+fakeDataset.to_sql(TABLENAME, con=engine)
