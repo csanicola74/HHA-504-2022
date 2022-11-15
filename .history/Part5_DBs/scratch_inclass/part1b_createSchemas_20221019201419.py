@@ -2,15 +2,13 @@
 # -*- coding: utf-8 -*-
 
 import dbm
-import pandas as pd
+import pandas as pd 
 import sqlalchemy
 from sqlalchemy import create_engine
 from dotenv import load_dotenv
 import os
 
-# drop the old tables that do not start with production_
-
-
+### drop the old tables that do not start with production_
 def droppingFunction_limited(dbList, db_source):
     for table in dbList:
         if table.startswith('production_') == False:
@@ -18,7 +16,6 @@ def droppingFunction_limited(dbList, db_source):
             print(f'dropped table {table}')
         else:
             print(f'kept table {table}')
-
 
 def droppingFunction_all(dbList, db_source):
     for table in dbList:
@@ -31,7 +28,7 @@ def droppingFunction_all(dbList, db_source):
 load_dotenv()
 
 AZURE_MYSQL_HOSTNAME = os.getenv("AZURE_MYSQL_HOSTNAME")
-AZURE_MYSQL_USER = os.getenv("AZURE_MYSQL_USER")
+AZURE_MYSQL_USER = os.getenv("AZURE_MYSQL_USERNAME")
 AZURE_MYSQL_PASSWORD = os.getenv("AZURE_MYSQL_PASSWORD")
 AZURE_MYSQL_DATABASE = os.getenv("AZURE_MYSQL_DATABASE")
 
@@ -57,29 +54,27 @@ db_gcp = create_engine(connection_string_gcp)
 connection_string_gcp_2 = f'mysql+pymysql://{GCP_MYSQL_USER_2}:{GCP_MYSQL_PASSWORD_2}@{GCP_MYSQL_HOSTNAME_2}:3306/{GCP_MYSQL_DATABASE_2}'
 db_gcp_2 = create_engine(connection_string_gcp_2)
 
-# note to self, need to ensure server_paremters => require_secure_transport is OFF in Azure
+#### note to self, need to ensure server_paremters => require_secure_transport is OFF in Azure 
 
-# show tables from databases
+### show tables from databases
 tableNames_azure = db_azure.table_names()
 tableNames_gcp = db_gcp.table_names()
 tableNames_gcp_2 = db_gcp_2.table_names()
 
 # reoder tables: production_patient_conditions, production_patient_medications, production_medications, production_patients, production_conditions
-tableNames_azure = ['production_patient_conditions', 'production_patient_medications',
-                    'production_medications', 'production_patients', 'production_conditions']
-tableNames_gcp = ['production_patient_conditions', 'production_patient_medications',
-                  'production_medications', 'production_patients', 'production_conditions']
+tableNames_azure = ['production_patient_conditions', 'production_patient_medications', 'production_medications', 'production_patients', 'production_conditions']
+tableNames_gcp = ['production_patient_conditions', 'production_patient_medications', 'production_medications', 'production_patients', 'production_conditions']
 
-# ### delete everything
+# ### delete everything 
 droppingFunction_all(tableNames_azure, db_azure)
 droppingFunction_all(tableNames_gcp, db_gcp)
 
 
-# first step below is just creating a basic version of each of the tables,
-# along with the primary keys and default values
+#### first step below is just creating a basic version of each of the tables,
+#### along with the primary keys and default values 
 
 
-###
+### 
 table_prod_patients = """
 create table if not exists production_patients (
     id int auto_increment,
@@ -114,6 +109,8 @@ create table if not exists production_conditions (
     PRIMARY KEY (id) 
 ); 
 """
+
+
 
 
 table_prod_patients_medications = """
@@ -160,6 +157,7 @@ db_azure.execute(table_prod_patients_medications)
 db_azure.execute(table_prod_patient_conditions)
 
 
+
 # get tables from db_azure
 azure_tables = db_azure.table_names()
 
@@ -167,11 +165,13 @@ azure_tables = db_azure.table_names()
 gcp_tables = db_gcp.table_names()
 
 
+
+
 droppingFunction_limited(azure_tables, db_azure)
 droppingFunction_limited(gcp_tables, db_gcp)
 
 
-# confirm that it worked
+### confirm that it worked 
 # get tables from db_azure
 azure_tables = db_azure.table_names()
 # get tables from db_gcp
