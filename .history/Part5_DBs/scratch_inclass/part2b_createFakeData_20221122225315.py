@@ -133,11 +133,11 @@ startingRow = 0
 for index, row in icd10codesShort_1k.iterrows():
     startingRow += 1
     print('startingRow: ', startingRow)
-    db_azure.execute(
-        insertQuery, (row['CodeWithSeparator'], row['ShortDescription']))
+    # db_azure.execute(insertQuery, (row['CodeWithSeparator'], row['ShortDescription']))
     print("inserted row db_azure: ", index)
-    # db_gcp_2.execute(insertQuery, (row['CodeWithSeparator'], row['ShortDescription']))
-    # print("inserted row db_gcp: ", index)
+    db_gcp_2.execute(
+        insertQuery, (row['CodeWithSeparator'], row['ShortDescription']))
+    print("inserted row db_gcp: ", index)
     # stop once we have 100 rows
     if startingRow == 100:
         break
@@ -164,9 +164,9 @@ insertQuery = "INSERT INTO production_medications (med_ndc, med_human_name) VALU
 medRowCount = 0
 for index, row in ndc_codes_1k.iterrows():
     medRowCount += 1
-    db_azure.execute(
+    # db_azure.execute(insertQuery, (row['PRODUCTNDC'], row['NONPROPRIETARYNAME']))
+    db_gcp_2.execute(
         insertQuery, (row['PRODUCTNDC'], row['NONPROPRIETARYNAME']))
-    # db_gcp_2.execute(insertQuery, (row['PRODUCTNDC'], row['NONPROPRIETARYNAME']))
     print("inserted row: ", index)
     # stop once we have 50 rows
     if medRowCount == 75:
@@ -189,9 +189,9 @@ df_gcp = pd.read_sql_query("SELECT * FROM production_medications", db_gcp)
 
 # first, lets query production_conditions and production_patients to get the ids
 df_conditions = pd.read_sql_query(
-    "SELECT icd10_code FROM production_conditions", db_azure)
+    "SELECT icd10_code FROM production_conditions", db_gcp_2)
 df_patients = pd.read_sql_query(
-    "SELECT mrn FROM production_patients", db_azure)
+    "SELECT mrn FROM production_patients", db_gcp_2)
 
 # create a dataframe that is stacked and give each patient a random number of conditions between 1 and 5
 df_patient_conditions = pd.DataFrame(columns=['mrn', 'icd10_code'])
@@ -212,7 +212,7 @@ print(df_patient_conditions.head(20))
 insertQuery = "INSERT INTO production_patient_conditions (mrn, icd10_code) VALUES (%s, %s)"
 
 for index, row in df_patient_conditions.iterrows():
-    db_azure.execute(insertQuery, (row['mrn'], row['icd10_code']))
+    db_gcp_2.execute(insertQuery, (row['mrn'], row['icd10_code']))
     print("inserted row: ", index)
 
 
@@ -221,9 +221,9 @@ for index, row in df_patient_conditions.iterrows():
 # first, lets query production_medications and production_patients to get the ids
 
 df_medications = pd.read_sql_query(
-    "SELECT med_ndc FROM production_medications", db_azure)
+    "SELECT med_ndc FROM production_medications", db_gcp_2)
 df_patients = pd.read_sql_query(
-    "SELECT mrn FROM production_patients", db_azure)
+    "SELECT mrn FROM production_patients", db_gcp_2)
 
 # create a dataframe that is stacked and give each patient a random number of medications between 1 and 5
 df_patient_medications = pd.DataFrame(columns=['mrn', 'med_ndc'])
@@ -245,7 +245,7 @@ print(df_patient_medications.head(10))
 insertQuery = "INSERT INTO production_patient_medications (mrn, med_ndc) VALUES (%s, %s)"
 
 for index, row in df_patient_medications.iterrows():
-    db_azure.execute(insertQuery, (row['mrn'], row['med_ndc']))
+    db_gcp_2.execute(insertQuery, (row['mrn'], row['med_ndc']))
     print("inserted row: ", index)
 
 

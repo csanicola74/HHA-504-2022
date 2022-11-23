@@ -221,9 +221,9 @@ for index, row in df_patient_conditions.iterrows():
 # first, lets query production_medications and production_patients to get the ids
 
 df_medications = pd.read_sql_query(
-    "SELECT med_ndc FROM production_medications", db_azure)
+    "SELECT med_ndc FROM production_medications", db_gcp_2)
 df_patients = pd.read_sql_query(
-    "SELECT mrn FROM production_patients", db_azure)
+    "SELECT mrn FROM production_patients", db_gcp_2)
 
 # create a dataframe that is stacked and give each patient a random number of medications between 1 and 5
 df_patient_medications = pd.DataFrame(columns=['mrn', 'med_ndc'])
@@ -245,7 +245,7 @@ print(df_patient_medications.head(10))
 insertQuery = "INSERT INTO production_patient_medications (mrn, med_ndc) VALUES (%s, %s)"
 
 for index, row in df_patient_medications.iterrows():
-    db_azure.execute(insertQuery, (row['mrn'], row['med_ndc']))
+    db_gcp_2.execute(insertQuery, (row['mrn'], row['med_ndc']))
     print("inserted row: ", index)
 
 
