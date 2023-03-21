@@ -1,2 +1,1 @@
-cve-bin-tool
-pip-audit
+d8s-html==0.1.0

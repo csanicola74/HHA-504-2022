@@ -6,6 +6,6 @@
 - Install requirements for it to run 
     - `pip install -r requirements.txt --no-warn-script-location`
 - Make sure that it works 
-    - `python3 dnsrecon.py -h` 
+    - `python dnsrecon.py -h` 
 - Then test a known domain: 
-    - `python3 dnsrecon.py -d stonybrook.edu`
+    - `python dnsrecon.py -d stonybrook.edu`
